@@ -1,0 +1,13 @@
+<!doctype HTML>
+<html {{if .Lang}}lang="{{.Lang}}" xml:lang="{{.Lang}}"{{end}}>
+  <head>
+		<link href="/main.css" rel="stylesheet" type="text/css"/>
+		{{template "google-head" .}}
+  </head>
+	<body>
+		<div id="buttons">
+			<h1>Login</h1>
+			{{template "google" .}}
+		</div>
+	</body>
+</html>

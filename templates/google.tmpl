@@ -1,0 +1,42 @@
+{{define "google-head"}}{{if .GoogleClientID}}
+	<meta name="google-signin-scope" content="profile email">
+	<meta name="google-signin-client_id" content="{{.GoogleClientID}}.apps.googleusercontent.com">
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+{{end}}{{end}}
+
+{{define "google"}}{{if .GoogleClientID}}
+	<div class="loginbtn g-signin2" data-onsuccess="onGoogleSignIn" data-width="120" data-theme="light"></div>
+	<script>
+		function onGoogleSignIn(googleUser) {
+			{{/*
+			// Useful data for your client-side scripts:
+			var profile = googleUser.getBasicProfile();
+			console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+			console.log('Full Name: ' + profile.getName());
+			console.log('Given Name: ' + profile.getGivenName());
+			console.log('Family Name: ' + profile.getFamilyName());
+			console.log("Image URL: " + profile.getImageUrl());
+			console.log("Email: " + profile.getEmail());
+			*/}}
+
+			var id_token = googleUser.getAuthResponse().id_token;
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', '/tokenlogin');
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			{{/*
+			// TODO: Which of these is right?
+			xhr.onload = function() {
+				console.log('Signed in as: ' + xhr.responseText);
+			};
+			xhr.onreadystatechange = function() {
+					if(xhr.readyState == 4 && xhr.status == 200) {
+						console.log("RESP: " + xhr.responseText);
+					} else {
+						console.log(xhr);
+					}
+			};
+			*/}}
+			xhr.send('id_token=' + id_token);
+		};
+	</script>
+{{end}}{{end}}
