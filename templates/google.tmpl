@@ -21,7 +21,7 @@
 
 			var id_token = googleUser.getAuthResponse().id_token;
 			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/tokenlogin');
+			xhr.open('POST', '/googlelogin');
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 			{{/*
 			// TODO: Which of these is right?

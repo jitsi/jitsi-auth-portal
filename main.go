@@ -63,7 +63,7 @@ func loadTemplates() {
 func main() {
 	log.Printf("Starting server on %s…\n", addr)
 
-	http.HandleFunc("/tokenlogin", googleLoginHandler(context.Background()))
+	http.HandleFunc("/googlelogin", googleLoginHandler(context.Background()))
 	http.HandleFunc("/login", loginHandler(context.Background()))
 	if pubDir != "" {
 		http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(pubDir))))
@@ -100,4 +100,13 @@ type Login struct {
 	Lang              language.Tag
 	GoogleClientID    string
 	BitbucketClientID string
+}
+
+func writeError(ctx context.Context, w http.ResponseWriter, msg string, status int) {
+	tr, ok := trace.FromContext(ctx)
+	if ok {
+		tr.LazyPrintf(msg)
+		tr.SetError()
+	}
+	http.Error(w, msg, status)
 }
