@@ -37,8 +37,8 @@ func GoogleLogin(ctx context.Context) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		// BUG: We should skip the Post request and verify the JWT signature with
-		//      Google's public key.
+		// TODO: We should skip the Post request and verify the JWT signature with
+		//       Google's public key.
 		tr.LazyPrintf("Starting Google token validation…")
 		inforesp, err := ctxhttp.PostForm(ctx, http.DefaultClient,
 			"https://www.googleapis.com/oauth2/v3/tokeninfo",
