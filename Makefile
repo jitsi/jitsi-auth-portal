@@ -21,6 +21,11 @@ cmd/jap/jap:
 jap: cmd/jap/jap *.go
 	ln -f cmd/jap/jap jap
 
+.PHONEY: clean
+clean:
+	make -C cmd/jap/ $@
+	rm -f jap
+
 deps.svg: *.go
 	(   echo "digraph G {"; \
 	go list -f '{{range .Imports}}{{printf "\t%q -> %q;\n" $$.ImportPath .}}{{end}}' \
