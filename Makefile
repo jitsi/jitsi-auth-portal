@@ -11,8 +11,12 @@ test:
 vet:
 	go vet $(PACKAGES)
 
+.PHONEY: preview
+preview:
+	make -C cmd/jap/ $@
+
 cmd/jap/jap:
-	make -C cmd/jap/
+	make -C cmd/jap/ jap
 
 jap: cmd/jap/jap
 	ln -f cmd/jap/jap jap
