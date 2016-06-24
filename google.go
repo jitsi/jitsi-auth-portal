@@ -11,8 +11,8 @@ import (
 )
 
 // GoogleLogin returns a handler which attempts to extract a client ID from its
-// trace and sends the information to Google to validate the user. If no client
-// ID exists in the trace, it panics.
+// context and sends the information to Google to validate the user. If no
+// client ID exists in the context it panics.
 //
 // The handler may return one of the following errors:
 //
