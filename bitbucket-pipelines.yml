@@ -1,0 +1,13 @@
+image: golang:latest
+pipelines:
+  default:
+    - step:
+        script:
+          - mkdir -p "$GOPATH/src/github.com/jitsi"
+          - ln -s "`pwd`" "$GOPATH/src/github.com/jitsi/jwtsi"
+          - cd "$GOPATH/src/github.com/jitsi/jwtsi"
+          - go-wrapper download
+          - go version
+          - go build -race
+          - go vet
+          - go test -cover
