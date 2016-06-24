@@ -1,0 +1,2 @@
+jap:
+	go build

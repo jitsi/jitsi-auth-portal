@@ -1,10 +1,10 @@
-// The jwtsi command launches an OAuth2 server that generates a JSON Web
+// The jap command launches an OAuth2 server that generates a JSON Web
 // Signature (JWS) to prove the users identity to other Jitsi services.
 //
-// To get started run jwtsi -help
+// To get started run jap -help
 //
-// Jwtsi does not have an option to listen for HTTPS connections. To use TLS,
-// put Jwtsi behind a reverse proxy such as nginx.
+// JAP does not have an option to listen for HTTPS connections. To use TLS, put
+// JAP behind a reverse proxy such as nginx.
 package main
 
 import (
@@ -16,13 +16,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jitsi/jwtsi"
+	"github.com/jitsi/jap"
 	"golang.org/x/net/context"
 	"golang.org/x/net/trace"
 	"golang.org/x/text/language"
 )
 
-const help = `The jwtsi command launches an OAuth2 server that generates a JSON
+const help = `The jap command launches an OAuth2 server that generates a JSON
 Web Signature (JWS) to prove the users identity to other Jitsi services.
 
 To use the supported providers, a few environment variables must be set:
@@ -69,14 +69,14 @@ func loadTemplates() {
 	case len(files) < 1:
 		panic("No templates found in " + tmplDir)
 	}
-	tmpl = template.Must(template.New("jwtsi").ParseFiles(files...))
+	tmpl = template.Must(template.New("jap").ParseFiles(files...))
 }
 
 func main() {
 	log.Printf("Starting server on %s…\n", addr)
 
-	http.HandleFunc("/googlelogin", jwtsi.GoogleLogin(
-		jwtsi.NewCIDContext(context.Background(), googleClientID)))
+	http.HandleFunc("/googlelogin", jap.GoogleLogin(
+		jap.NewCIDContext(context.Background(), googleClientID)))
 	http.HandleFunc("/login", loginHandler(context.Background()))
 	if pubDir != "" {
 		http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(pubDir))))
@@ -90,7 +90,7 @@ func loginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) 
 			loadTemplates()
 		}
 
-		tr := trace.New("jwtsi.login", r.URL.Path)
+		tr := trace.New("jap.login", r.URL.Path)
 		defer tr.Finish()
 
 		tr.LazyPrintf("Executing login.tmpl…")

@@ -1,7 +1,7 @@
 PACKAGES=$$(go list ./... | grep -v '/vendor/')
 
 .PHONEY: build
-build: jwtsi
+build: jap
 
 .PHONEY: test
 test:
@@ -11,11 +11,11 @@ test:
 vet:
 	go vet $(PACKAGES)
 
-cmd/jwtsi/jwtsi:
-	make -C cmd/jwtsi/
+cmd/jap/jap:
+	make -C cmd/jap/
 
-jwtsi: cmd/jwtsi/jwtsi
-	ln -f cmd/jwtsi/jwtsi jwtsi
+jap: cmd/jap/jap
+	ln -f cmd/jap/jap jap
 
 deps.svg: *.go
 	(   echo "digraph G {"; \

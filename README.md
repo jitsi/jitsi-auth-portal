@@ -1,23 +1,22 @@
-# Jitsi JWT Service
+# Jitsi Authentication Portal
 
-[![GoDoc](https://godoc.org/github.com/jitsi/jwtsi?status.svg)](https://godoc.org/github.com/jitsi/jwtsi)
+[![GoDoc](https://godoc.org/github.com/jitsi/jap?status.svg)](https://godoc.org/github.com/jitsi/jap)
 [![License](https://img.shields.io/badge/license-FreeBSD-blue.svg)](https://opensource.org/licenses/BSD-2-Clause)
 
-The Jitsi JWT Service is an OAuth2 frontend that allows authentication with a
-number of providers and generates a short-lived, signed, JWT (jot) token to
-assert the users identity to Jitsi Meet.
+The Jitsi Authentication Portal is an OAuth2 frontend that allows authentication
+with a number of third party providers and generates short-lived, signed, JWT
+(jot) tokens to assert the users identity to Jitsi Meet.
 
 The package contains a number of handlers which can be used to build your own
-compatible login service. There is also an example service in the `cmd/jwtsi`
-directory which provides a nice frontend (which can be loaded in an iframe) that
-supports several providers, and the various required login endpoints.
+compatible login service. There is also an example service in the `cmd/jap`
+directory which provides a simple frontend.
 
-To get started, install the `jwtsi` command and run it:
+To get started, install the `jap` command and run it:
 
 ```go
-go get github.com/jitsi/jwtsi
-go install github.com/jitsi/jwtsi/cmd/jwtsi
-jwtsi -help
+go get github.com/jitsi/jap
+go install github.com/jitsi/jap/cmd/jap
+jap -help
 ```
 
 ## License

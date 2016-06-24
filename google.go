@@ -1,4 +1,4 @@
-package jwtsi
+package jap
 
 import (
 	"encoding/json"
@@ -27,7 +27,7 @@ func GoogleLogin(ctx context.Context) func(http.ResponseWriter, *http.Request) {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		tr := trace.New("jwtsi.tokenlogin", r.URL.Path)
+		tr := trace.New("jap.tokenlogin", r.URL.Path)
 		defer tr.Finish()
 		ctx = trace.NewContext(ctx, tr)
 
