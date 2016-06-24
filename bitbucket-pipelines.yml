@@ -5,13 +5,14 @@ pipelines:
         script:
           - mkdir -p "$GOPATH/src/github.com/jitsi"
           - ln -s "`pwd`" "$GOPATH/src/github.com/jitsi/jwtsi"
-          - go-wrapper download
           - go version
           - cd "$GOPATH/src/github.com/jitsi/jwtsi"
+          - go-wrapper download
           - go build -race
           - go vet
           - go test -cover
           - cd "$GOPATH/src/github.com/jitsi/jwtsi/jwtsi"
+          - go-wrapper download
           - go build -race
           - go vet
           - go test -cover
