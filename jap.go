@@ -11,18 +11,15 @@ const (
 	clientIDKey int = iota
 )
 
-// ClientID represents an OAuth2 client identifier.
-type ClientID string
-
 // CIDFromContext returns the client ID bound to the context, if any.
-func CIDFromContext(ctx context.Context) (cid ClientID, ok bool) {
-	cid, ok = ctx.Value(clientIDKey).(ClientID)
+func CIDFromContext(ctx context.Context) (cid string, ok bool) {
+	cid, ok = ctx.Value(clientIDKey).(string)
 	return
 }
 
 // NewCIDContext returns a copy of the parent context and associates it with a
 // client id.
-func NewCIDContext(ctx context.Context, cid ClientID) context.Context {
+func NewCIDContext(ctx context.Context, cid string) context.Context {
 	return context.WithValue(ctx, clientIDKey, cid)
 }
 
