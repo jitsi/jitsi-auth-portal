@@ -70,7 +70,7 @@ func GoogleLogin(ctx context.Context) func(http.ResponseWriter, *http.Request) {
 			writeError(ctx, w, "Error decoding upstream response", http.StatusInternalServerError)
 			return
 		}
-		if claims.Aud != cid {
+		if ClientID(claims.Aud) != cid {
 			writeError(ctx, w, "Error decoding upstream response", http.StatusInternalServerError)
 			return
 		}

@@ -76,7 +76,7 @@ func main() {
 	log.Printf("Starting server on %s…\n", addr)
 
 	http.HandleFunc("/googlelogin", jap.GoogleLogin(
-		jap.NewCIDContext(context.Background(), googleClientID)))
+		jap.NewCIDContext(context.Background(), jap.ClientID(googleClientID))))
 	http.HandleFunc("/login", loginHandler(context.Background()))
 	if pubDir != "" {
 		http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(pubDir))))
