@@ -3,12 +3,15 @@ package jap
 import (
 	"crypto/rsa"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 
 	"golang.org/x/net/context"
 	"golang.org/x/net/context/ctxhttp"
 	"golang.org/x/net/trace"
+	"golang.org/x/oauth2/jws"
 )
 
 // GoogleLogin returns a handler which attempts to extract a client ID from its
@@ -61,20 +64,50 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey) func(http.ResponseWri
 			writeError(ctx, w, "Unexpected response from upstream", http.StatusInternalServerError)
 			return
 		}
-		tr.LazyPrintf("Received claims from Google…")
-		claims := struct {
+		tr.LazyPrintf("Received claims from Google.")
+		meta := struct {
 			Aud          string `json:"aud"`
 			Email        string `json:"email"`
+			Verified     string `json:"email_verified"` // For some reason Google make this a string.
 			HostedDomain string `json:"hd"`
 			Locale       string `json:"locale"`
 		}{}
-		if err := json.NewDecoder(inforesp.Body).Decode(&claims); err != nil {
+		tr.LazyPrintf("Decoding claims from Google…")
+		if err := json.NewDecoder(inforesp.Body).Decode(&meta); err != nil {
 			writeError(ctx, w, "Error decoding upstream response", http.StatusInternalServerError)
 			return
 		}
-		if claims.Aud != cid {
+		if meta.Aud != cid || ((meta.Email == "" || meta.Verified != "true") && meta.HostedDomain == "") {
 			writeError(ctx, w, "Error decoding upstream response", http.StatusInternalServerError)
 			return
 		}
+		tr.LazyPrintf("Decoded claims from Google.")
+
+		// Generate the JWT
+		iat := time.Now().Unix()
+		claims := jws.ClaimSet{
+			Scope:         "login",
+			Iss:           meta.Email,
+			Exp:           iat + (5 * 60),
+			Iat:           iat,
+			PrivateClaims: map[string]interface{}{},
+		}
+		if meta.Locale != "" {
+			claims.PrivateClaims["locale"] = meta.Locale
+		}
+		if meta.HostedDomain != "" {
+			claims.PrivateClaims["domain"] = meta.HostedDomain
+		}
+		header := jws.Header{
+			Algorithm: "RS256",
+		}
+		tr.LazyPrintf("Signing JWT…")
+		tok, err := jws.Encode(&header, &claims, key)
+		if err != nil {
+			writeError(ctx, w, "Error encoding JWS", http.StatusInternalServerError)
+			return
+		}
+		tr.LazyPrintf("Done signing JWT.")
+		fmt.Fprintf(w, tok)
 	}
 }
