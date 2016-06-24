@@ -1,7 +1,8 @@
 // The jap command launches an OAuth2 server that generates a JSON Web
 // Signature (JWS) to prove the users identity to other Jitsi services.
+// To get started run:
 //
-// To get started run jap -help
+//    jap -help
 //
 // JAP does not have an option to listen for HTTPS connections. To use TLS, put
 // JAP behind a reverse proxy such as nginx.
