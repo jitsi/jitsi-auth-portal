@@ -18,7 +18,7 @@ preview:
 cmd/jap/jap:
 	make -C cmd/jap/ jap
 
-jap: cmd/jap/jap
+jap: cmd/jap/jap *.go
 	ln -f cmd/jap/jap jap
 
 deps.svg: *.go

@@ -1,4 +1,4 @@
-jap:
+jap: *.go
 	go build
 
 .PHONEY: preview
