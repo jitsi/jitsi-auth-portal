@@ -5,6 +5,8 @@
 //    jap -help
 package main
 
+//go:generate go run gen.go
+
 // BUG(ssw): Jap does not support TLS. To access the service with TLS (which you
 //           really should be doing), use a reverse proxy such as Nginx.
 
@@ -22,15 +24,6 @@ import (
 	"golang.org/x/net/trace"
 	"golang.org/x/text/language"
 )
-
-const help = `The jap command launches an OAuth2 server that generates a JSON
-Web Signature (JWS) to prove the users identity to other Jitsi services.
-
-To use the supported providers, a few environment variables must be set:
-
-ENV:
-
-  GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET: Needed to support login with Google.`
 
 var (
 	addr, pubDir, tmplDir              string

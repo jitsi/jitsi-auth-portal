@@ -1,5 +1,5 @@
 *.sh
 *.sw[op]
 deps.svg
-jwtsi
-jap
+/jwtsi
+/jap
