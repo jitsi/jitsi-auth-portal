@@ -56,6 +56,7 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey) func(http.ResponseWri
 			}
 			return
 		}
+		defer inforesp.Body.Close()
 		if inforesp.StatusCode < 200 || inforesp.StatusCode > 299 {
 			writeError(ctx, w, "Unexpected response from upstream", http.StatusInternalServerError)
 			return
