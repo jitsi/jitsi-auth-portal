@@ -1,2 +1,4 @@
 *.sh
 *.sw[op]
+deps.svg
+jwtsi

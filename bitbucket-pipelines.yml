@@ -11,7 +11,7 @@ pipelines:
           - go build -race
           - go vet
           - go test -cover
-          - cd "$GOPATH/src/github.com/jitsi/jwtsi/jwtsi"
+          - cd "$GOPATH/src/github.com/jitsi/jwtsi/cmd/jwtsi"
           - go-wrapper download
           - go build -race
           - go vet
