@@ -52,9 +52,9 @@ func loadTemplates() {
 	files, err := filepath.Glob(filepath.Join(tmplDir, "*.tmpl"))
 	switch {
 	case err != nil:
-		panic(err)
+		log.Fatal(err)
 	case len(files) < 1:
-		panic("No templates found in " + tmplDir)
+		log.Fatalf("No templates found in %s", tmplDir)
 	}
 	tmpl = template.Must(template.New("jap").ParseFiles(files...))
 }
