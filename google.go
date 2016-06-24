@@ -1,6 +1,7 @@
 package jap
 
 import (
+	"crypto/rsa"
 	"encoding/json"
 	"net/http"
 	"net/url"
@@ -20,7 +21,7 @@ import (
 //   408 RequestTimeout      – If the contexts deadline was exceeded.
 //   500 InternalServerError – If the upstream returns a response we don't understand.
 //   502 BadGateway          – If an upstream service fails to respond for another reason.
-func GoogleLogin(ctx context.Context) func(http.ResponseWriter, *http.Request) {
+func GoogleLogin(ctx context.Context, key *rsa.PrivateKey) func(http.ResponseWriter, *http.Request) {
 	cid, ok := CIDFromContext(ctx)
 	if !ok {
 		panic("No client ID found in the context")

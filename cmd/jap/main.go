@@ -4,9 +4,13 @@ package main
 //           really should be doing), use a reverse proxy such as Nginx.
 
 import (
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"flag"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -19,7 +23,7 @@ import (
 )
 
 var (
-	addr, pubDir, tmplDir              string
+	addr, pubDir, tmplDir, keyPath     string
 	googleClientSecret, googleClientID string
 	redirectURL                        string
 
@@ -37,6 +41,7 @@ func init() {
 	flag.StringVar(&pubDir, "public", "public/", "A directory containing static files to serve.")
 	flag.StringVar(&tmplDir, "templates", "templates/", "A directory containing templates to render.")
 	flag.StringVar(&redirectURL, "redirect", "https://meet.jit.si", "The URL to redirect back too after performing OAuth.")
+	flag.StringVar(&keyPath, "key", os.Getenv("JAP_PRIVATE_KEY"), "An RSA private key in PEM format to use for signing tokens. Defaults to $JAP_PRIVATE_KEY.")
 	flag.BoolVar(&devMode, "dev", false, "Run in dev mode (reload templates on page refresh).")
 	flag.Parse()
 
@@ -59,11 +64,34 @@ func loadTemplates() {
 	tmpl = template.Must(template.New("jap").ParseFiles(files...))
 }
 
+func loadRSAKeyFromPEM(keyPath string) (*rsa.PrivateKey, error) {
+	pembytes, err := ioutil.ReadFile(keyPath)
+	if err != nil {
+		return nil, err
+	}
+	var blk *pem.Block
+	for {
+		blk, pembytes = pem.Decode(pembytes)
+		if blk.Type == "RSA PRIVATE KEY" {
+			return x509.ParsePKCS1PrivateKey(blk.Bytes)
+		}
+	}
+	return nil, fmt.Errorf("No RSA private key found in pem file %s", keyPath)
+}
+
 func main() {
+	if keyPath == "" {
+		log.Fatalf("No private key specified. Try: %s -help", os.Args[0])
+	}
+	key, err := loadRSAKeyFromPEM(keyPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	log.Printf("Starting server on %s…\n", addr)
 
 	http.HandleFunc("/googlelogin", jap.GoogleLogin(
-		jap.NewCIDContext(context.Background(), googleClientID)))
+		jap.NewCIDContext(context.Background(), googleClientID), key))
 	http.HandleFunc("/login", loginHandler(context.Background()))
 	if pubDir != "" {
 		http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(pubDir))))
