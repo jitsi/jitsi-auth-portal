@@ -25,7 +25,7 @@ import (
 var (
 	addr, pubDir, tmplDir, keyPath     string
 	googleClientSecret, googleClientID string
-	redirectURL                        string
+	originURL                          string
 
 	tmpl    *template.Template
 	devMode bool
@@ -40,8 +40,8 @@ func init() {
 	flag.StringVar(&addr, "http", ":http-alt", "The address to listen on.")
 	flag.StringVar(&pubDir, "public", "public/", "A directory containing static files to serve.")
 	flag.StringVar(&tmplDir, "templates", "templates/", "A directory containing templates to render.")
-	flag.StringVar(&redirectURL, "redirect", "https://meet.jit.si", "The URL to redirect back too after performing OAuth.")
 	flag.StringVar(&keyPath, "key", os.Getenv("JAP_PRIVATE_KEY"), "An RSA private key in PEM format to use for signing tokens. Defaults to $JAP_PRIVATE_KEY.")
+	flag.StringVar(&originURL, "origin", "", "A domain that the /login endpoint will send a postMessage too (eg. https://meet.jit.si).")
 	flag.BoolVar(&devMode, "dev", false, "Run in dev mode (reload templates on page refresh).")
 	flag.Parse()
 
@@ -112,6 +112,7 @@ func loginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) 
 		err := tmpl.ExecuteTemplate(w, "login.tmpl", Login{
 			Lang:           language.English,
 			GoogleClientID: googleClientID,
+			TargetOrigin:   originURL,
 		})
 		if err != nil {
 			tr.LazyPrintf("Error exeuting login.tmpl:", err.Error())
@@ -126,4 +127,5 @@ func loginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) 
 type Login struct {
 	Lang           language.Tag
 	GoogleClientID string
+	TargetOrigin   string
 }

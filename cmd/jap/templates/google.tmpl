@@ -23,19 +23,13 @@
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', '/googlelogin');
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			{{/*
-			// TODO: Which of these is right?
-			xhr.onload = function() {
-				console.log('Signed in as: ' + xhr.responseText);
-			};
-			xhr.onreadystatechange = function() {
+			{{if .TargetOrigin}}
+				xhr.onreadystatechange = function() {
 					if(xhr.readyState == 4 && xhr.status == 200) {
-						console.log("RESP: " + xhr.responseText);
-					} else {
-						console.log(xhr);
+						window.parent.postMessage(xhr.responseText, {{.TargetOrigin}});
 					}
-			};
-			*/}}
+				};
+			{{end}}
 			xhr.send('id_token=' + id_token);
 		};
 	</script>
