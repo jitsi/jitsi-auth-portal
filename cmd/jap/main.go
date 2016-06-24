@@ -3,10 +3,10 @@
 // To get started run:
 //
 //    jap -help
-//
-// JAP does not have an option to listen for HTTPS connections. To use TLS, put
-// JAP behind a reverse proxy such as nginx.
 package main
+
+// BUG(ssw): Jap does not support TLS. To access the service with TLS (which you
+//           really should be doing), use a reverse proxy such as Nginx.
 
 import (
 	"flag"
