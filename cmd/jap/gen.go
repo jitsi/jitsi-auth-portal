@@ -28,6 +28,8 @@ func main() {
 	}
 	defer fh.Close()
 
+	fmt.Fprintln(fh, "// This file was generate by go generate; DO NOT EDIT\n")
+
 	r := strings.NewReader(help)
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {

@@ -1,6 +1,6 @@
 package main
 
-// BUG(ssw): Jap does not support TLS. To access the service with TLS (which you
+// BUG(ssw): JAP does not support TLS. To access the service with TLS (which you
 //           really should be doing), use a reverse proxy such as Nginx.
 
 import (

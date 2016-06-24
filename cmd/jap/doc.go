@@ -1,3 +1,5 @@
+// This file was generate by go generate; DO NOT EDIT
+
 // The jap command launches an OAuth2 server that generates a JSON
 // Web Signature (JWS) to prove the users identity to other Jitsi services.
 //
