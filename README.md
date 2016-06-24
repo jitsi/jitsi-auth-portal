@@ -11,7 +11,7 @@ To get started, install `jwtsi` and run it:
 
 ```go
 go get github.com/jitsi/jwtsi
-go install github.com/jitsi/jwtsi
+go install github.com/jitsi/jwtsi/cmd/jwtsi
 jwtsi -help
 ```
 
