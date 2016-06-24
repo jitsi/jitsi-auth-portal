@@ -5,8 +5,6 @@
 //    jap -help
 package main
 
-//go:generate go run gen.go
-
 // BUG(ssw): Jap does not support TLS. To access the service with TLS (which you
 //           really should be doing), use a reverse proxy such as Nginx.
 

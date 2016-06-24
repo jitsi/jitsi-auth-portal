@@ -40,7 +40,9 @@ func main() {
 	}
 	fmt.Fprintln(fh, "package main\n")
 
-	fmt.Fprint(fh, "const help=`")
+	fmt.Fprintln(fh, "//go:generate go run gen.go\n")
+
+	fmt.Fprint(fh, "const help = `")
 	fmt.Fprint(fh, help)
-	fmt.Fprint(fh, "`")
+	fmt.Fprintln(fh, "`")
 }
