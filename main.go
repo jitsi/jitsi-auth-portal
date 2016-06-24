@@ -54,7 +54,7 @@ func loadTemplates() {
 	case len(files) < 1:
 		panic("No templates found in " + tmplDir)
 	}
-	tmpl = template.Must(template.New("jap").ParseFiles(files...))
+	tmpl = template.Must(template.New("jwtsi").ParseFiles(files...))
 }
 
 func main() {
@@ -74,7 +74,7 @@ func loginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) 
 			loadTemplates()
 		}
 
-		tr := trace.New("jap.login", r.URL.Path)
+		tr := trace.New("jwtsi.login", r.URL.Path)
 		defer tr.Finish()
 
 		tr.LazyPrintf("Executing login.tmpl…")
