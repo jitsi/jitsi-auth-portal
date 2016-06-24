@@ -7,7 +7,12 @@ The Jitsi JWT Service is an OAuth2 frontend that allows authentication with a
 number of providers and generates a short-lived, signed, JWT (jot) token to
 assert the users identity to Jitsi Meet.
 
-To get started, install `jwtsi` and run it:
+The package contains a number of handlers which can be used to build your own
+compatible login service. There is also an example service in the `cmd/jwtsi`
+directory which provides a nice frontend (which can be loaded in an iframe) that
+supports several providers, and the various required login endpoints.
+
+To get started, install the `jwtsi` command and run it:
 
 ```go
 go get github.com/jitsi/jwtsi
