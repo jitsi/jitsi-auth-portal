@@ -29,6 +29,7 @@ func googleLoginHandler(ctx context.Context) func(http.ResponseWriter, *http.Req
 
 		// BUG: We should skip the Post request and verify the JWT signature with
 		//      Google's public key.
+		tr.LazyPrintf("Starting Google token validation…")
 		inforesp, err := ctxhttp.PostForm(ctx, http.DefaultClient,
 			"https://www.googleapis.com/oauth2/v3/tokeninfo",
 			url.Values{
@@ -48,6 +49,7 @@ func googleLoginHandler(ctx context.Context) func(http.ResponseWriter, *http.Req
 			writeError(ctx, w, "Unexpected response from upstream", http.StatusInternalServerError)
 			return
 		}
+		tr.LazyPrintf("Received claims from Google…")
 		claims := struct {
 			Aud          string `json:"aud"`
 			Email        string `json:"email"`

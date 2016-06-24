@@ -17,10 +17,9 @@ import (
 )
 
 var (
-	addr, pubDir, tmplDir                    string
-	googleClientSecret, googleClientID       string
-	bitbucketClientSecret, bitbucketClientID string
-	redirectURL                              string
+	addr, pubDir, tmplDir              string
+	googleClientSecret, googleClientID string
+	redirectURL                        string
 
 	tmpl    *template.Template
 	devMode bool
@@ -41,8 +40,6 @@ func init() {
 
 	googleClientID = os.Getenv("GOOGLE_CLIENT_ID")
 	googleClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
-	bitbucketClientID = os.Getenv("BITBUCKET_CLIENT_ID")
-	bitbucketClientSecret = os.Getenv("BITBUCKET_CLIENT_SECRET")
 
 	loadTemplates()
 }
@@ -82,9 +79,8 @@ func loginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) 
 
 		tr.LazyPrintf("Executing login.tmpl…")
 		err := tmpl.ExecuteTemplate(w, "login.tmpl", Login{
-			Lang:              language.English,
-			GoogleClientID:    googleClientID,
-			BitbucketClientID: bitbucketClientID,
+			Lang:           language.English,
+			GoogleClientID: googleClientID,
 		})
 		if err != nil {
 			tr.LazyPrintf("Error exeuting login.tmpl:", err.Error())
@@ -97,9 +93,8 @@ func loginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) 
 
 // Login represents all the information we need to show the login window.
 type Login struct {
-	Lang              language.Tag
-	GoogleClientID    string
-	BitbucketClientID string
+	Lang           language.Tag
+	GoogleClientID string
 }
 
 func writeError(ctx context.Context, w http.ResponseWriter, msg string, status int) {
