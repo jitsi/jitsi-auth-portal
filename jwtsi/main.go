@@ -1,3 +1,10 @@
+// The jwtsi command launches an OAuth2 server that generates a JSON Web
+// Signature (JWS) to prove the users identity to other Jitsi services.
+//
+// To get started run jwtsi -help
+//
+// Jwtsi does not have an option to listen for HTTPS connections. To use TLS,
+// put Jwtsi behind a reverse proxy such as nginx.
 package main
 
 import (
@@ -9,12 +16,20 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/jitsi/jwtsi"
 	"golang.org/x/net/context"
 	"golang.org/x/net/trace"
-	// "golang.org/x/oauth2"
-	// "golang.org/x/oauth2/google"
 	"golang.org/x/text/language"
 )
+
+const help = `The jwtsi command launches an OAuth2 server that generates a JSON
+Web Signature (JWS) to prove the users identity to other Jitsi services.
+
+To use the supported providers, a few environment variables must be set:
+
+ENV:
+
+  GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET: Needed to support login with Google.`
 
 var (
 	addr, pubDir, tmplDir              string
@@ -60,7 +75,8 @@ func loadTemplates() {
 func main() {
 	log.Printf("Starting server on %s…\n", addr)
 
-	http.HandleFunc("/googlelogin", googleLoginHandler(context.Background()))
+	http.HandleFunc("/googlelogin", jwtsi.GoogleLogin(
+		jwtsi.NewCIDContext(context.Background(), googleClientID)))
 	http.HandleFunc("/login", loginHandler(context.Background()))
 	if pubDir != "" {
 		http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(pubDir))))
@@ -95,13 +111,4 @@ func loginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) 
 type Login struct {
 	Lang           language.Tag
 	GoogleClientID string
-}
-
-func writeError(ctx context.Context, w http.ResponseWriter, msg string, status int) {
-	tr, ok := trace.FromContext(ctx)
-	if ok {
-		tr.LazyPrintf(msg)
-		tr.SetError()
-	}
-	http.Error(w, msg, status)
 }

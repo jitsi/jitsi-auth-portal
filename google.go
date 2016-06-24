@@ -1,4 +1,4 @@
-package main
+package jwtsi
 
 import (
 	"encoding/json"
@@ -10,12 +10,22 @@ import (
 	"golang.org/x/net/trace"
 )
 
-// Errors:
-//  400 BadRequest          – If the id_token form param is missing.
-//  408 RequestTimeout      – If the contexts deadline was exceeded.
-//  500 InternalServerError – If the upstream returns a response we don't understand.
-//  502 BadGateway          – If an upstream service fails to respond for another reason.
-func googleLoginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) {
+// GoogleLogin returns a handler which attempts to extract a client ID from its
+// trace and sends the information to Google to validate the user. If no client
+// ID exists in the trace, it panics.
+//
+// Errors
+//
+//   400 BadRequest          – If the id_token form param is missing.
+//   408 RequestTimeout      – If the contexts deadline was exceeded.
+//   500 InternalServerError – If the upstream returns a response we don't understand.
+//   502 BadGateway          – If an upstream service fails to respond for another reason.
+func GoogleLogin(ctx context.Context) func(http.ResponseWriter, *http.Request) {
+	cid, ok := CIDFromContext(ctx)
+	if !ok {
+		panic("No client ID found in the context")
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		tr := trace.New("jwtsi.tokenlogin", r.URL.Path)
 		defer tr.Finish()
@@ -60,7 +70,7 @@ func googleLoginHandler(ctx context.Context) func(http.ResponseWriter, *http.Req
 			writeError(ctx, w, "Error decoding upstream response", http.StatusInternalServerError)
 			return
 		}
-		if claims.Aud != googleClientID {
+		if claims.Aud != cid {
 			writeError(ctx, w, "Error decoding upstream response", http.StatusInternalServerError)
 			return
 		}
