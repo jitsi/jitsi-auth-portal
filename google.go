@@ -68,7 +68,7 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey) func(http.ResponseWri
 		meta := struct {
 			Aud          string `json:"aud"`
 			Email        string `json:"email"`
-			Verified     string `json:"email_verified"` // For some reason Google make this a string.
+			Verified     string `json:"email_verified"` // For some reason Google makes this a string.
 			HostedDomain string `json:"hd"`
 			Locale       string `json:"locale"`
 		}{}
