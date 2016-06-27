@@ -1,24 +1,31 @@
 body {
-	background-color: #205081;
+	background-color: white;
 }
 
 #buttons {
-	background-color: #3572b0;
-	box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.25);
+	border-bottom: 1px solid #ccc;
 	height: 400px;
 	margin: 0 auto;
 	max-width: 500px;
 	padding: 2em;
-	width: 100%;
+	width: 300px;
+}
+
+#buttons h1:before {
+	background: no-repeat center/2em url("https://jitsi.org/logo/jitsi_logo.svg");
+	content: "";
+	display: block;
+	height: 3em;
 }
 
 #buttons h1 {
-	color: #f5f5f5;
-	margin-bottom: 1em;
+	color: #205081;
+	font-family: 'Circular Pro Bold','Helvetica Neue',Helvetica,Arial,sans-serif;
+	margin-bottom: 2em;
 	text-align: center;
 }
 
 .loginbtn {
 	margin: 0 auto;
-	width: 120px;
+	width: 300px;
 }
