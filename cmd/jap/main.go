@@ -12,12 +12,14 @@ import (
 	"html/template"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/jitsi/jap"
 	"golang.org/x/net/context"
+	"golang.org/x/net/netutil"
 	"golang.org/x/net/trace"
 	"golang.org/x/text/language"
 )
@@ -26,6 +28,7 @@ var (
 	addr, pubDir, tmplDir, keyPath     string
 	googleClientSecret, googleClientID string
 	originURL                          string
+	maxConns                           int
 
 	tmpl    *template.Template
 	devMode bool
@@ -42,6 +45,7 @@ func init() {
 	flag.StringVar(&tmplDir, "templates", "templates/", "A directory containing templates to render.")
 	flag.StringVar(&keyPath, "key", os.Getenv("JAP_PRIVATE_KEY"), "An RSA private key in PEM format to use for signing tokens. Defaults to $JAP_PRIVATE_KEY.")
 	flag.StringVar(&originURL, "origin", "", "A domain that the /login endpoint will send a postMessage too (eg. https://meet.jit.si).")
+	flag.IntVar(&maxConns, "maxconns", 0, "The maximum number of connections to service at once or 0 for unlimited.")
 	flag.BoolVar(&devMode, "dev", false, "Run in dev mode (reload templates on page refresh).")
 	flag.Parse()
 
@@ -96,7 +100,15 @@ func main() {
 	if pubDir != "" {
 		http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(pubDir))))
 	}
-	log.Fatal(http.ListenAndServe(addr, nil))
+
+	l, err := net.Listen("tcp", addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if maxConns > 0 {
+		l = netutil.LimitListener(l, maxConns)
+	}
+	log.Fatal(http.Serve(l, nil))
 }
 
 func loginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) {
