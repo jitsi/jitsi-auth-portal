@@ -1,0 +1,16 @@
+{{define "userpass"}}
+	<form id="form-login" class="aui top-label aui-form-supersize" action="/exampleuserpasslogin" method="post" novalidate="">
+		<div class="field-group ">
+			<label for="username">Email</label><input class="text full-width-field" name="username" id="username" autofocus="" placeholder="Email" maxlength="255/" type="email">
+		</div>
+		<div class="field-group ">
+			<label for="password">Password</label><input class="text full-width-field" name="password" id="password" placeholder="Password" type="password">
+		</div>
+		<div class="buttons-container"><div class="buttons">
+				<input id="login-submit" class="aui-button aui-button-primary" value="Log in" type="submit"><div class="checkbox remember-me">
+					<input class="checkbox" name="rememberMe" id="rememberMe" value="true" checked type="checkbox"><label for="rememberMe">Stay logged in</label>
+				</div>
+			</div></div>
+			<input class="hidden" name="continue" id="continue" value="https://id.atlassian.com/openid/v2/op?openid.ax.type.fullname=http://axschema.org/namePerson&amp;openid.ax.required=fullname,firstname,lastname,email&amp;openid.ns.ax=http://openid.net/srv/ax/1.0&amp;openid.return_to=https://enso.me/login&amp;openid.sreg.optional=nickname,email,fullname,dob,gender,postcode,country,language,timezone&amp;openid.ns=http://specs.openid.net/auth/2.0&amp;openid.ax.type.email=http://axschema.org/contact/email&amp;openid.ns.sreg=http://openid.net/extensions/sreg/1.1&amp;openid.ax.mode=fetch_request&amp;openid.ax.type.lastname=http://axschema.org/namePerson/last&amp;openid.ax.type.firstname=http://axschema.org/namePerson/first&amp;openid.identity=http://specs.openid.net/auth/2.0/identifier_select&amp;openid.realm=https://*.enso.me&amp;openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select&amp;openid.mode=checkid_setup" type="hidden"><input name="csrfToken" value="e4c4835109a81f9ca241922106e852f3d089a57e-1467043791131-77ae763248e87c253c158424" type="hidden">
+	</form>
+{{end}}

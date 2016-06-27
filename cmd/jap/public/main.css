@@ -2,8 +2,27 @@ body {
 	background-color: white;
 }
 
-#buttons {
+.sep {
+	text-align: center;
+	margin-top: 3em;
+	margin-bottom: 1em;
+}
+
+form label[for="password"], label[for="username"] {
+	display: none !important;
+}
+
+form .checkbox {
+	float: right;
+}
+
+.clear-line {
 	border-bottom: 1px solid #ccc;
+	clear: both;
+	margin-top: 2em;
+}
+
+#buttons {
 	height: 400px;
 	margin: 0 auto;
 	max-width: 500px;
