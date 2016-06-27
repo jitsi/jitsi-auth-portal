@@ -21,5 +21,7 @@ func TestGoogleHandlerDoesNotPanicWithCID(t *testing.T) {
 			t.Error("Did not expect GoogleLogin to panic if provided with a CID")
 		}
 	}()
-	_ = GoogleLogin(NewCIDContext(context.Background(), "TESTSID"), nil)
+	if h := GoogleLogin(NewCIDContext(context.Background(), "TESTSID"), nil); h == nil {
+		t.Error("Expected GoogleLogin to return a handler, but got nil")
+	}
 }
