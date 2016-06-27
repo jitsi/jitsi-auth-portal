@@ -35,6 +35,13 @@ func writeError(ctx context.Context, w http.ResponseWriter, msg string, status i
 }
 
 func signJWT(ctx context.Context, claims jws.ClaimSet, key *rsa.PrivateKey) (tok string, err error) {
+	// Assert that we actually get a key. We don't want bugs that result in nil
+	// keys to go unnoticed; we want them to break everything. This would probably
+	// happen in the crypto functions anyways, but I want it to be testable.
+	if key == nil {
+		panic("got nil RSA private key; something is very, very wrong.")
+	}
+
 	tr, ok := trace.FromContext(ctx)
 
 	header := jws.Header{
