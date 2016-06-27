@@ -98,16 +98,11 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey) func(http.ResponseWri
 		if meta.HostedDomain != "" {
 			claims.PrivateClaims["domain"] = meta.HostedDomain
 		}
-		header := jws.Header{
-			Algorithm: "RS256",
-		}
-		tr.LazyPrintf("Signing JWT…")
-		tok, err := jws.Encode(&header, &claims, key)
+		tok, err := signJWT(ctx, claims, key)
 		if err != nil {
 			writeError(ctx, w, "Error encoding JWS", http.StatusInternalServerError)
 			return
 		}
-		tr.LazyPrintf("Done signing JWT.")
 		fmt.Fprintf(w, tok)
 	}
 }

@@ -1,10 +1,12 @@
 package jap
 
 import (
+	"crypto/rsa"
 	"net/http"
 
 	"golang.org/x/net/context"
 	"golang.org/x/net/trace"
+	"golang.org/x/oauth2/jws"
 )
 
 const (
@@ -30,4 +32,23 @@ func writeError(ctx context.Context, w http.ResponseWriter, msg string, status i
 		tr.SetError()
 	}
 	http.Error(w, msg, status)
+}
+
+func signJWT(ctx context.Context, claims jws.ClaimSet, key *rsa.PrivateKey) (tok string, err error) {
+	tr, ok := trace.FromContext(ctx)
+
+	header := jws.Header{
+		Algorithm: "RS256",
+	}
+	if ok {
+		tr.LazyPrintf("Signing JWT…")
+	}
+	tok, err = jws.Encode(&header, &claims, key)
+	if err != nil {
+		return tok, err
+	}
+	if ok {
+		tr.LazyPrintf("Done signing JWT.")
+	}
+	return tok, nil
 }
