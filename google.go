@@ -31,7 +31,7 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey) func(http.ResponseWri
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		tr := trace.New("jap.tokenlogin", r.URL.Path)
+		tr := trace.New("jap.GoogleLogin", r.URL.Path)
 		defer tr.Finish()
 		ctx = trace.NewContext(ctx, tr)
 
