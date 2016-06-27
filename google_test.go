@@ -14,3 +14,12 @@ func TestGoogleHandlerPanicsWithoutCID(t *testing.T) {
 	}()
 	_ = GoogleLogin(context.Background(), nil)
 }
+
+func TestGoogleHandlerDoesNotPanicWithCID(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Error("Did not expect GoogleLogin to panic if provided with a CID")
+		}
+	}()
+	_ = GoogleLogin(NewCIDContext(context.Background(), "TESTSID"), nil)
+}
