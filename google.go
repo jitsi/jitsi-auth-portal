@@ -21,10 +21,11 @@ import (
 // The handler may return one of the following errors:
 //
 //   400 BadRequest          – If the id_token form param is missing.
+//   401 StatusUnauthorzed   — If the permCheck function returns false.
 //   408 RequestTimeout      – If the contexts deadline was exceeded.
 //   500 InternalServerError – If the upstream returns a response we don't understand.
 //   502 BadGateway          – If an upstream service fails to respond for another reason.
-func GoogleLogin(ctx context.Context, key *rsa.PrivateKey) func(http.ResponseWriter, *http.Request) {
+func GoogleLogin(ctx context.Context, key *rsa.PrivateKey, permCheck PermissionChecker) func(http.ResponseWriter, *http.Request) {
 	cid, ok := CIDFromContext(ctx)
 	if !ok {
 		panic("No client ID found in the context")
@@ -98,10 +99,16 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey) func(http.ResponseWri
 		if meta.HostedDomain != "" {
 			claims.PrivateClaims["domain"] = meta.HostedDomain
 		}
-		tok, err := signJWT(ctx, claims, key)
-		if err != nil {
-			writeError(ctx, w, "Error encoding JWS", http.StatusInternalServerError)
+		tok, err := signJWT(ctx, claims, key, permCheck)
+		switch err {
+		case errPermissionDenied:
+			writeError(ctx, w, "Permission check failed", http.StatusUnauthorized)
 			return
+		default:
+			if err != nil {
+				writeError(ctx, w, "Error encoding JWS", http.StatusInternalServerError)
+				return
+			}
 		}
 		fmt.Fprintf(w, tok)
 	}

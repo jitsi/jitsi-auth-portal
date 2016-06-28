@@ -14,6 +14,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/rpc"
 	"os"
 	"path/filepath"
 
@@ -29,10 +30,15 @@ var (
 	googleClientSecret, googleClientID string
 	originURL                          string
 	maxConns                           int
+	rpcAddr, rpcMethod                 string
 
 	tmpl    *template.Template
 	devMode bool
 )
+
+// BUG(ssw): Most applications of Jitsi won't care about the RPC functionality
+//           of JAP, but those that do may want to use a different codec, eg.
+//           JSON-RPC so that they don't have to write a separate Go service.
 
 func init() {
 	flag.Usage = func() {
@@ -45,6 +51,8 @@ func init() {
 	flag.StringVar(&tmplDir, "templates", "templates/", "A directory containing templates to render.")
 	flag.StringVar(&keyPath, "key", os.Getenv("JAP_PRIVATE_KEY"), "An RSA private key in PEM format to use for signing tokens. Defaults to $JAP_PRIVATE_KEY.")
 	flag.StringVar(&originURL, "origin", "", "A domain that the /login endpoint will send a postMessage too (eg. https://meet.jit.si).")
+	flag.StringVar(&rpcAddr, "rpcaddr", "", "An address that can be used to make RPC calls to verify permissions for a user.")
+	flag.StringVar(&rpcMethod, "rpc", "Permissions.Check", "The RPC call to make to rcpaddr. This should be a function that takes a string (the token) and replies with a boolean. It should be compatible with Go's net/rpc package.")
 	flag.IntVar(&maxConns, "maxconns", 0, "The maximum number of connections to service at once or 0 for unlimited.")
 	flag.BoolVar(&devMode, "dev", false, "Run in dev mode (reload templates on page refresh).")
 	flag.Parse()
@@ -92,10 +100,25 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var rpcClient *rpc.Client
+	if rpcAddr != "" && rpcMethod != "" {
+		log.Printf("Dialing RPC server at %s…", rpcAddr)
+		if rpcClient, err = rpc.DialHTTP("tcp", rpcAddr); err != nil {
+			log.Fatal("Failed to dial RPC server at %s: %v", rpcAddr, err)
+		}
+	}
+
 	log.Printf("Starting server on %s…\n", addr)
 
+	var permCheck jap.PermissionChecker
+	if rpcClient != nil {
+		permCheck = func(tok string) (b bool, err error) {
+			err = rpcClient.Call(rpcMethod, tok, &b)
+			return b, err
+		}
+	}
 	http.HandleFunc("/googlelogin", jap.GoogleLogin(
-		jap.NewCIDContext(context.Background(), googleClientID), key))
+		jap.NewCIDContext(context.Background(), googleClientID), key, permCheck))
 	http.HandleFunc("/login", loginHandler(context.Background()))
 	if pubDir != "" {
 		http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(pubDir))))
