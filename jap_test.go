@@ -21,5 +21,5 @@ func TestSignJWTPanicsOnNilKey(t *testing.T) {
 			t.Error("Expected signJWT to panic with nil private key")
 		}
 	}()
-	signJWT(context.Background(), jws.ClaimSet{}, nil)
+	signJWT(context.Background(), jws.ClaimSet{}, nil, nil)
 }

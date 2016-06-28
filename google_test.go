@@ -12,7 +12,7 @@ func TestGoogleHandlerPanicsWithoutCID(t *testing.T) {
 			t.Error("Expected GoogleLogin to panic if CID missing from context")
 		}
 	}()
-	_ = GoogleLogin(context.Background(), nil)
+	_ = GoogleLogin(context.Background(), nil, nil)
 }
 
 func TestGoogleHandlerDoesNotPanicWithCID(t *testing.T) {
@@ -21,7 +21,7 @@ func TestGoogleHandlerDoesNotPanicWithCID(t *testing.T) {
 			t.Error("Did not expect GoogleLogin to panic if provided with a CID")
 		}
 	}()
-	if h := GoogleLogin(NewCIDContext(context.Background(), "TESTSID"), nil); h == nil {
+	if h := GoogleLogin(NewCIDContext(context.Background(), "TESTSID"), nil, nil); h == nil {
 		t.Error("Expected GoogleLogin to return a handler, but got nil")
 	}
 }
