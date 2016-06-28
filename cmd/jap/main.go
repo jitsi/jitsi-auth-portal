@@ -15,6 +15,7 @@ import (
 	"net"
 	"net/http"
 	"net/rpc"
+	"net/rpc/jsonrpc"
 	"os"
 	"path/filepath"
 
@@ -30,15 +31,11 @@ var (
 	googleClientSecret, googleClientID string
 	originURL                          string
 	maxConns                           int
-	rpcAddr, rpcMethod                 string
+	rpcAddr, rpcMethod, rpcCodec       string
 
 	tmpl    *template.Template
 	devMode bool
 )
-
-// BUG(ssw): Most applications of Jitsi won't care about the RPC functionality
-//           of JAP, but those that do may want to use a different codec, eg.
-//           JSON-RPC so that they don't have to write a separate Go service.
 
 func init() {
 	flag.Usage = func() {
@@ -53,6 +50,7 @@ func init() {
 	flag.StringVar(&originURL, "origin", "", "A domain that the /login endpoint will send a postMessage too (eg. https://meet.jit.si).")
 	flag.StringVar(&rpcAddr, "rpcaddr", "", "An address that can be used to make RPC calls to verify permissions for a user.")
 	flag.StringVar(&rpcMethod, "rpc", "Permissions.Check", "The RPC call to make to rcpaddr. This should be a function that takes a string (the token) and replies with a boolean. It should be compatible with Go's net/rpc package.")
+	flag.StringVar(&rpcCodec, "rpccodec", "gob", `The type of RPC call to make (either "gob" for Go gobs or "json" for JSON-RPC).`)
 	flag.IntVar(&maxConns, "maxconns", 0, "The maximum number of connections to service at once or 0 for unlimited.")
 	flag.BoolVar(&devMode, "dev", false, "Run in dev mode (reload templates on page refresh).")
 	flag.Parse()
@@ -103,8 +101,17 @@ func main() {
 	var rpcClient *rpc.Client
 	if rpcAddr != "" && rpcMethod != "" {
 		log.Printf("Dialing RPC server at %s…", rpcAddr)
-		if rpcClient, err = rpc.DialHTTP("tcp", rpcAddr); err != nil {
-			log.Fatal("Failed to dial RPC server at %s: %v", rpcAddr, err)
+		switch rpcCodec {
+		case "json":
+			if rpcClient, err = jsonrpc.Dial("tcp", rpcAddr); err != nil {
+				log.Fatal("Failed to dial JSON-RPC server at %s: %v", rpcAddr, err)
+			}
+		case "gob":
+			if rpcClient, err = rpc.DialHTTP("tcp", rpcAddr); err != nil {
+				log.Fatal("Failed to dial RPC server at %s: %v", rpcAddr, err)
+			}
+		default:
+			log.Fatal("No such RPC codec %s", rpcCodec)
 		}
 	}
 
