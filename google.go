@@ -99,6 +99,10 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey, permCheck PermissionC
 		if meta.HostedDomain != "" {
 			claims.PrivateClaims["domain"] = meta.HostedDomain
 		}
+		if room := r.FormValue("room"); room != "" {
+			claims.PrivateClaims["room"] = room
+		}
+
 		tok, err := signJWT(ctx, claims, key, permCheck)
 		switch err {
 		case errPermissionDenied:
