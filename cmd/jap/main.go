@@ -10,6 +10,7 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -35,6 +36,10 @@ var (
 
 	tmpl    *template.Template
 	devMode bool
+)
+
+const (
+	rpcRetries = 3
 )
 
 func init() {
@@ -89,6 +94,22 @@ func loadRSAKeyFromPEM(keyPath string) (*rsa.PrivateKey, error) {
 	return nil, fmt.Errorf("No RSA private key found in pem file %s", keyPath)
 }
 
+// TODO: Add incremental backoff and dialer retries.
+func dialRPC() (rpcClient *rpc.Client, err error) {
+	if rpcAddr != "" && rpcMethod != "" {
+		log.Printf("Dialing RPC server at %s…", rpcAddr)
+		switch rpcCodec {
+		case "json":
+			return jsonrpc.Dial("tcp", rpcAddr)
+		case "gob":
+			return rpc.DialHTTP("tcp", rpcAddr)
+		default:
+			fmt.Errorf("No such RPC codec %s", rpcCodec)
+		}
+	}
+	return nil, nil
+}
+
 func main() {
 	if keyPath == "" {
 		log.Fatalf("No private key specified. Try: %s -help", os.Args[0])
@@ -99,20 +120,8 @@ func main() {
 	}
 
 	var rpcClient *rpc.Client
-	if rpcAddr != "" && rpcMethod != "" {
-		log.Printf("Dialing RPC server at %s…", rpcAddr)
-		switch rpcCodec {
-		case "json":
-			if rpcClient, err = jsonrpc.Dial("tcp", rpcAddr); err != nil {
-				log.Fatal("Failed to dial JSON-RPC server at %s: %v", rpcAddr, err)
-			}
-		case "gob":
-			if rpcClient, err = rpc.DialHTTP("tcp", rpcAddr); err != nil {
-				log.Fatal("Failed to dial RPC server at %s: %v", rpcAddr, err)
-			}
-		default:
-			log.Fatal("No such RPC codec %s", rpcCodec)
-		}
+	if rpcClient, err = dialRPC(); err != nil {
+		log.Fatal(err)
 	}
 
 	log.Printf("Starting server on %s…\n", addr)
@@ -120,7 +129,17 @@ func main() {
 	var permCheck jap.PermissionChecker
 	if rpcClient != nil {
 		permCheck = func(tok string) (b bool, err error) {
-			err = rpcClient.Call(rpcMethod, tok, &b)
+			for i := 0; i < rpcRetries; i++ {
+				err = rpcClient.Call(rpcMethod, tok, &b)
+				log.Println("CHECKED:", b, err)
+				switch err {
+				case nil:
+					return b, err
+				case rpc.ErrShutdown, io.ErrUnexpectedEOF:
+					rpcClient, _ = dialRPC()
+					continue
+				}
+			}
 			return b, err
 		}
 	}
