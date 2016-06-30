@@ -31,15 +31,11 @@ var (
 	addr, pubDir, tmplDir, keyPath     string
 	googleClientSecret, googleClientID string
 	originURL                          string
-	maxConns                           int
+	maxConns, rpcRetries               int
 	rpcAddr, rpcMethod, rpcCodec       string
 
 	tmpl    *template.Template
 	devMode bool
-)
-
-const (
-	rpcRetries = 3
 )
 
 func init() {
@@ -56,6 +52,7 @@ func init() {
 	flag.StringVar(&rpcAddr, "rpcaddr", "", "An address that can be used to make RPC calls to verify permissions for a user.")
 	flag.StringVar(&rpcMethod, "rpc", "Permissions.Check", "The RPC call to make to rcpaddr. This should be a function that takes a string (the token) and replies with a boolean. It should be compatible with Go's net/rpc package.")
 	flag.StringVar(&rpcCodec, "rpccodec", "gob", `The type of RPC call to make (either "gob" for Go gobs or "json" for JSON-RPC).`)
+	flag.IntVar(&rpcRetries, "rpcretries", 3, "The number of times to retry making RPC calls.")
 	flag.IntVar(&maxConns, "maxconns", 0, "The maximum number of connections to service at once or 0 for unlimited.")
 	flag.BoolVar(&devMode, "dev", false, "Run in dev mode (reload templates on page refresh).")
 	flag.Parse()
