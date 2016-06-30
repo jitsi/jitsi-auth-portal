@@ -118,7 +118,7 @@ func main() {
 
 	var rpcClient *rpc.Client
 	if rpcClient, err = dialRPC(); err != nil {
-		log.Fatal(err)
+		log.Println("Failed to dial RPC server:", err)
 	}
 
 	log.Printf("Starting server on %s…\n", addr)
