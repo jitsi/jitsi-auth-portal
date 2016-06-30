@@ -89,7 +89,7 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey, permCheck PermissionC
 		claims := jws.ClaimSet{
 			Scope:         "login",
 			Iss:           meta.Email,
-			Exp:           iat + (5 * 60),
+			Exp:           iat + (5 * 60), // TODO(ssw): Make the expiration time configurable.
 			Iat:           iat,
 			PrivateClaims: map[string]interface{}{},
 		}
@@ -106,6 +106,7 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey, permCheck PermissionC
 		tok, err := signJWT(ctx, claims, key, permCheck)
 		switch err {
 		case errPermissionDenied:
+			tr.LazyPrintf("Error signing token: %s", err.Error())
 			writeError(ctx, w, "Permission check failed", http.StatusUnauthorized)
 			return
 		default:
