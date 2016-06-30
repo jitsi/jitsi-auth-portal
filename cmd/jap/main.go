@@ -137,7 +137,7 @@ func main() {
 					continue
 				}
 			}
-			return b, err
+			return false, err
 		}
 	}
 	http.HandleFunc("/googlelogin", jap.GoogleLogin(
