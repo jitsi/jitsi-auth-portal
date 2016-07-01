@@ -45,7 +45,7 @@
 			xhr.onreadystatechange = function() {
 				{{if .TargetOrigin}}
 					if(xhr.readyState == 4 && xhr.status == 200) {
-						window.parent.postMessage(xhr.responseText, {{.TargetOrigin}});
+						window.parent.postMessage({"jwtToken": xhr.responseText}, {{.TargetOrigin}});
 					}
 				{{end}}
 				if ("roleUpgrade" in urlParams) {
