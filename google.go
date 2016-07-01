@@ -104,8 +104,8 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey, permCheck PermissionC
 		if room := r.FormValue("room"); room != "" {
 			claims.PrivateClaims["room"] = room
 		}
-		if meta.email != "" {
-			claims.PrivateClaims["email"] = meta.email
+		if meta.Email != "" {
+			claims.PrivateClaims["email"] = meta.Email
 		}
 
 		tok, err := signJWT(ctx, claims, key, permCheck)
