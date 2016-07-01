@@ -38,16 +38,16 @@
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', '/googlelogin');
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			{{if .TargetOrigin}}
-				xhr.onreadystatechange = function() {
+			xhr.onreadystatechange = function() {
+				{{if .TargetOrigin}}
 					if(xhr.readyState == 4 && xhr.status == 200) {
 						window.parent.postMessage(xhr.responseText, {{.TargetOrigin}});
 					}
-					if ("roleUpgrade" in urlParams) {
-						window.close();
-					}
-				};
-			{{end}}
+				{{end}}
+				if ("roleUpgrade" in urlParams) {
+					window.close();
+				}
+			};
 			var params = 'id_token=' + id_token;
 			if ("room" in urlParams) {
 				params += '&room=' + urlParams["room"];
