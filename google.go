@@ -84,6 +84,8 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey, permCheck PermissionC
 		}
 		tr.LazyPrintf("Decoded claims from Google.")
 
+		// TODO(ssw): Use server flow to get the YouTube token.
+
 		// Generate the JWT
 		iat := time.Now().Unix()
 		claims := jws.ClaimSet{

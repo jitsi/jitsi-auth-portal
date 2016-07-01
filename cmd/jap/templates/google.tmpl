@@ -38,6 +38,10 @@
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', '/googlelogin');
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			{{/*
+				TODO: A lot of this needs to be refactored out of the Google specific
+				auth methods.
+			*/}}
 			xhr.onreadystatechange = function() {
 				{{if .TargetOrigin}}
 					if(xhr.readyState == 4 && xhr.status == 200) {
