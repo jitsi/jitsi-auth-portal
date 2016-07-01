@@ -1,6 +1,8 @@
 <!doctype HTML>
 <html {{if .Lang}}lang="{{.Lang}}" xml:lang="{{.Lang}}"{{end}}>
 	<head>
+		{{/*TODO: i18n*/}}
+		<title>Login</title>
 		<link href="/main.css" rel="stylesheet" type="text/css"/>
 		{{template "google-head" .}}
 		{{template "aui-head"}}
@@ -14,7 +16,7 @@
 			<div class="sep">or</div>
 			{{template "userpass" .}}
 			*/}}
-			<div class="clear-line"/>
+			<div class="clear-line"></div>
 		</div>
 	</body>
 </html>
