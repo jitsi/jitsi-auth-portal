@@ -1,5 +1,5 @@
 {{define "google-head"}}{{if .GoogleClientID}}
-	<meta name="google-signin-scope" content="profile email">
+	<meta name="google-signin-scope" content="profile email https://www.googleapis.com/auth/youtube.readonly">
 	<meta name="google-signin-client_id" content="{{.GoogleClientID}}">
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
 {{end}}{{end}}
