@@ -66,6 +66,7 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey, permCheck PermissionC
 			return
 		}
 		tr.LazyPrintf("Received claims from Google.")
+
 		meta := struct {
 			Aud          string `json:"aud"`
 			Email        string `json:"email"`
@@ -73,11 +74,13 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey, permCheck PermissionC
 			HostedDomain string `json:"hd"`
 			Locale       string `json:"locale"`
 		}{}
+
 		tr.LazyPrintf("Decoding claims from Google…")
 		if err := json.NewDecoder(inforesp.Body).Decode(&meta); err != nil {
 			writeError(ctx, w, "Error decoding upstream response", http.StatusInternalServerError)
 			return
 		}
+
 		if meta.Aud != cid || ((meta.Email == "" || meta.Verified != "true") && meta.HostedDomain == "") {
 			writeError(ctx, w, "Error decoding upstream response", http.StatusInternalServerError)
 			return
@@ -90,7 +93,7 @@ func GoogleLogin(ctx context.Context, key *rsa.PrivateKey, permCheck PermissionC
 		iat := time.Now().Unix()
 		claims := jws.ClaimSet{
 			Scope:         "login",
-			Iss:           meta.Email,
+			Iss:           `com.jitsi.jap`,
 			Exp:           iat + (5 * 60), // TODO(ssw): Make the expiration time configurable.
 			Iat:           iat,
 			PrivateClaims: map[string]interface{}{},
