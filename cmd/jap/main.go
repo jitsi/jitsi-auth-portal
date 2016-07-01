@@ -124,7 +124,7 @@ func main() {
 	log.Printf("Starting server on %s…\n", addr)
 
 	var permCheck jap.PermissionChecker
-	if rpcClient != nil {
+	if rpcAddr != "" && rpcMethod != "" {
 		permCheck = func(tok string) (b bool, err error) {
 			for i := 0; i < rpcRetries; i++ {
 				err = rpcClient.Call(rpcMethod, tok, &b)
