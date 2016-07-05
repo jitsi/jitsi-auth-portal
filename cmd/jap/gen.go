@@ -46,6 +46,7 @@ func main() {
 		}
 		fmt.Fprintf(fh, "// %s\n", text)
 	}
+	fmt.Fprintf(fh, "//\n// For more information try:\n//\n//    jap -help\n")
 	fmt.Fprintln(fh, "package main\n")
 
 	fmt.Fprintln(fh, "//go:generate go run gen.go\n")

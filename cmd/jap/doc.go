@@ -14,6 +14,10 @@
 // On POSIX based systems templates can be reloaded in a running process by sending
 // the process a SIGHUP. For more information on POSIX signals, see the signal(7)
 // man page.
+//
+// For more information try:
+//
+//    jap -help
 package main
 
 //go:generate go run gen.go
