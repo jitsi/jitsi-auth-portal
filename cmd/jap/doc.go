@@ -3,11 +3,17 @@
 // The jap command launches an OAuth2 server that generates a JSON
 // Web Signature (JWS) to prove the users identity to other Jitsi services.
 //
+// Environment
+//
 // To use the supported providers, a few environment variables must be set:
 //
-// ENV:
-//
 //   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET: Needed to support login with Google.
+//
+// Signals
+//
+// On POSIX based systems templates can be reloaded in a running process by sending
+// the process a SIGHUP. For more information on POSIX signals, see the signal(7)
+// man page.
 package main
 
 //go:generate go run gen.go
@@ -15,8 +21,14 @@ package main
 const help = `The jap command launches an OAuth2 server that generates a JSON
 Web Signature (JWS) to prove the users identity to other Jitsi services.
 
+Environment
+
 To use the supported providers, a few environment variables must be set:
 
-ENV:
+  GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET: Needed to support login with Google.
 
-  GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET: Needed to support login with Google.`
+Signals
+
+On POSIX based systems templates can be reloaded in a running process by sending
+the process a SIGHUP. For more information on POSIX signals, see the signal(7)
+man page.`

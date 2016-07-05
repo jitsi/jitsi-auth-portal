@@ -36,8 +36,7 @@ var (
 	maxConns, rpcRetries               int
 	rpcAddr, rpcMethod, rpcCodec       string
 
-	tmpl    *template.Template
-	devMode bool
+	tmpl *template.Template
 )
 
 func init() {
@@ -56,7 +55,6 @@ func init() {
 	flag.StringVar(&rpcCodec, "rpccodec", "gob", `The type of RPC call to make (either "gob" for Go gobs or "json" for JSON-RPC).`)
 	flag.IntVar(&rpcRetries, "rpcretries", 3, "The number of times to retry making RPC calls.")
 	flag.IntVar(&maxConns, "maxconns", 0, "The maximum number of connections to service at once or 0 for unlimited.")
-	flag.BoolVar(&devMode, "dev", false, "Run in dev mode (reload templates on page refresh).")
 	flag.Parse()
 
 	googleClientID = os.Getenv("GOOGLE_CLIENT_ID")
@@ -177,10 +175,6 @@ func main() {
 
 func loginHandler(ctx context.Context) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if devMode {
-			loadTemplates()
-		}
-
 		tr := trace.New("jap.login", r.URL.Path)
 		defer tr.Finish()
 
