@@ -18,7 +18,9 @@ import (
 	"net/rpc"
 	"net/rpc/jsonrpc"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	"github.com/jitsi/jap"
 	"golang.org/x/net/context"
@@ -61,6 +63,22 @@ func init() {
 	googleClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
 
 	loadTemplates()
+
+	sigs := make(chan os.Signal)
+	signal.Notify(sigs, syscall.SIGHUP)
+
+	// Handle signals
+	go func() {
+		var s os.Signal
+		for {
+			s = <-sigs
+			switch s {
+			case syscall.SIGHUP:
+				log.Println("Received SIGHUP: reloading templates…")
+				loadTemplates()
+			}
+		}
+	}()
 }
 
 // Load all templates found in the tmplDir directory; if any of them contain
