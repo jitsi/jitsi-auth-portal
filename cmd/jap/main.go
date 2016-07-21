@@ -48,7 +48,7 @@ func init() {
 	flag.StringVar(&addr, "http", ":http-alt", "The address to listen on.")
 	flag.StringVar(&pubDir, "public", "public/", "A directory containing static files to serve.")
 	flag.StringVar(&tmplDir, "templates", "templates/", "A directory containing templates to render.")
-	flag.StringVar(&keyPath, "key", os.Getenv("JAP_PRIVATE_KEY"), "An RSA private key in PEM format to use for signing tokens. Defaults to $JAP_PRIVATE_KEY.")
+	flag.StringVar(&keyPath, "key", os.Getenv("JAP_PRIVATE_KEY_PATH"), "An RSA private key in PEM format to use for signing tokens. Defaults to $JAP_PRIVATE_KEY_PATH.")
 	flag.StringVar(&originURL, "origin", "", "A domain that the /login endpoint will send a postMessage too (eg. https://meet.jit.si).")
 	flag.StringVar(&rpcAddr, "rpcaddr", "", "An address that can be used to make RPC calls to verify permissions for a user.")
 	flag.StringVar(&rpcMethod, "rpc", "Permissions.Check", "The RPC call to make to rcpaddr. This should be a function that takes a string (the token) and replies with a boolean. It should be compatible with Go's net/rpc package.")
@@ -92,11 +92,7 @@ func loadTemplates() {
 	tmpl = template.Must(template.New("jap").ParseFiles(files...))
 }
 
-func loadRSAKeyFromPEM(keyPath string) (*rsa.PrivateKey, error) {
-	pembytes, err := ioutil.ReadFile(keyPath)
-	if err != nil {
-		return nil, err
-	}
+func loadRSAKeyFromPEM(pembytes []byte) (*rsa.PrivateKey, error) {
 	var blk *pem.Block
 	for {
 		blk, pembytes = pem.Decode(pembytes)
@@ -124,10 +120,21 @@ func dialRPC() (rpcClient *rpc.Client, err error) {
 }
 
 func main() {
-	if keyPath == "" {
+	if keyPath == "" && os.Getenv("JAP_PRIVATE_KEY") == "" {
 		log.Fatalf("No private key specified. Try: %s -help", os.Args[0])
 	}
-	key, err := loadRSAKeyFromPEM(keyPath)
+
+	var pembytes []byte
+	var err error
+	if keyenv := os.Getenv("JAP_PRIVATE_KEY"); keyenv != "" {
+		pembytes = []byte(keyenv)
+	} else {
+		pembytes, err = ioutil.ReadFile(keyPath)
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+	key, err := loadRSAKeyFromPEM(pembytes)
 	if err != nil {
 		log.Fatal(err)
 	}

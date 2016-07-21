@@ -21,6 +21,11 @@ To use the supported providers, a few environment variables must be set:
 
   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET: Needed to support login with Google.
 
+The private key used to sign JWTs can also be loaded directly from an
+environment variable:
+
+  JAP_PRIVATE_KEY
+
 Signals
 
 On POSIX based systems templates can be reloaded in a running process by sending
