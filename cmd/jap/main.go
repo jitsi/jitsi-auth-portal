@@ -100,6 +100,9 @@ func loadRSAKeyFromPEM(pembytes []byte) (*rsa.PrivateKey, error) {
 	var blk *pem.Block
 	for {
 		blk, pembytes = pem.Decode(pembytes)
+		if blk == nil {
+			break
+		}
 		if blk.Type == "RSA PRIVATE KEY" {
 			return x509.ParsePKCS1PrivateKey(blk.Bytes)
 		}
