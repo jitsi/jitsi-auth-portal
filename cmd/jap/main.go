@@ -7,6 +7,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"flag"
 	"fmt"
 	"html/template"
@@ -93,6 +94,9 @@ func loadTemplates() {
 }
 
 func loadRSAKeyFromPEM(pembytes []byte) (*rsa.PrivateKey, error) {
+	if len(pembytes) == 0 {
+		return errors.New("No pem data found")
+	}
 	var blk *pem.Block
 	for {
 		blk, pembytes = pem.Decode(pembytes)
@@ -131,11 +135,8 @@ func main() {
 	} else {
 		pembytes, err = ioutil.ReadFile(keyPath)
 	}
-	switch {
-	case err != nil:
+	if err != nil {
 		log.Fatal(err)
-	case len(pembytes) == 0:
-		log.Fatalf("No private key found.")
 	}
 	key, err := loadRSAKeyFromPEM(pembytes)
 	if err != nil {
