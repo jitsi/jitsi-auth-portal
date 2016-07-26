@@ -95,7 +95,7 @@ func loadTemplates() {
 
 func loadRSAKeyFromPEM(pembytes []byte) (*rsa.PrivateKey, error) {
 	if len(pembytes) == 0 {
-		return errors.New("No pem data found")
+		return nil, errors.New("No pem data found")
 	}
 	var blk *pem.Block
 	for {
