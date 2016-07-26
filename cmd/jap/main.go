@@ -117,7 +117,7 @@ func dialRPC() (rpcClient *rpc.Client, err error) {
 		case "gob":
 			return rpc.DialHTTP("tcp", rpcAddr)
 		default:
-			fmt.Errorf("No such RPC codec %s", rpcCodec)
+			return nil, fmt.Errorf("No such RPC codec %s", rpcCodec)
 		}
 	}
 	return nil, nil
