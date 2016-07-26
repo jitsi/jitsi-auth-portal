@@ -131,11 +131,11 @@ func main() {
 	} else {
 		pembytes, err = ioutil.ReadFile(keyPath)
 	}
-	if len(pembytes) == 0 {
-		log.Fatalf("No private key found.")
-	}
-	if err != nil {
+	switch {
+	case err != nil:
 		log.Fatal(err)
+	case len(pembytes) == 0:
+		log.Fatalf("No private key found.")
 	}
 	key, err := loadRSAKeyFromPEM(pembytes)
 	if err != nil {
