@@ -98,12 +98,13 @@ func loadRSAKeyFromPEM(pembytes []byte) (*rsa.PrivateKey, error) {
 		return nil, errors.New("No pem data found")
 	}
 	var blk *pem.Block
+decodeloop:
 	for {
 		blk, pembytes = pem.Decode(pembytes)
-		if blk == nil {
-			break
-		}
-		if blk.Type == "RSA PRIVATE KEY" {
+		switch {
+		case blk == nil:
+			break decodeloop
+		case blk.Type == "RSA PRIVATE KEY":
 			return x509.ParsePKCS1PrivateKey(blk.Bytes)
 		}
 	}
