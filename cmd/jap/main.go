@@ -131,6 +131,9 @@ func main() {
 	} else {
 		pembytes, err = ioutil.ReadFile(keyPath)
 	}
+	if len(pembytes) == 0 {
+		log.Fatalf("No private key found.")
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
