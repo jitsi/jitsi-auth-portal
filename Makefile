@@ -42,6 +42,7 @@ container: jap
 	# v0.0.5 becomes 0.0.5).
 	echo Building container jap:$(TAG)…
 	docker build -t jap:$(TAG) .
+	docker tag jap:$(TAG) jap:latest
 
 .PHONY: ecs
 ecs:
